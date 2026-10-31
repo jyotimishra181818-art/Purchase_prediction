@@ -1,0 +1,5 @@
+flask>=3.0
+scikit-learn>=1.4
+numpy>=1.26
+anthropic>=0.40
+psycopg2-binary>=2.9   # only needed for PostgreSQL

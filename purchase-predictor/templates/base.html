@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Purchase Predictor</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body><div class="wrap">
+{% if session.uid %}<div class="top"><h1>🛒 Purchase Predictor</h1><form method="post" action="{{ url_for('logout') }}" class="row"><span class="mut">{{ session.name }}</span><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="ghost sm">Log out</button></form></div>
+<nav>{% set ep = request.endpoint %}
+<a class="{{ 'on' if ep=='dashboard' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+<a class="{{ 'on' if ep=='customers_page' }}" href="{{ url_for('customers_page') }}">Customers</a>
+<a class="{{ 'on' if ep=='predict' }}" href="{{ url_for('predict') }}">Predict</a>
+<a class="{{ 'on' if ep=='assistant' }}" href="{{ url_for('assistant') }}">AI Assistant</a></nav>{% endif %}
+{% for m in get_flashed_messages() %}<div class="flash">{{ m }}</div>{% endfor %}
+{% block body %}{% endblock %}</div></body></html>

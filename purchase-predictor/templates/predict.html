@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Predict a purchase</h2>{% if not model %}<p class="mut">Train the model first: needs {{ need }}+ labeled customers.</p>{% endif %}
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf() }}"><div class="grid">
+{% for k,l in features %}<div><label>{{ l }}</label><input name="{{ k }}" type="number" step="any" value="{{ vals[k] }}"></div>{% endfor %}</div><br><button {{ '' if model else 'disabled' }}>Predict</button></form>
+{% if result is not none %}<h2 style="margin-top:16px">{{ '%d%%' % (result*100) }} chance to purchase <span class="tag {{ segment(result)[1] }}">{{ segment(result)[0] }}</span></h2>
+<div class="row"><div class="bar"><i style="width:{{ result*100 }}%"></i></div></div>
+<p class="mut">{{ 'Strong lead: prioritize outreach or a time-limited offer.' if result>=0.7 else 'Warm lead: nurture with a reminder or small incentive.' if result>=0.4 else 'Cold lead: low-cost automated marketing only.' }}</p>{% endif %}</div>
+{% endblock %}

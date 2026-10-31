@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>🤖 AI Assistant</h2><p class="mut">{{ 'Powered by Claude.' if live else 'Built-in assistant (set ANTHROPIC_API_KEY to enable Claude).' }} It sees a summary of your customers and model.</p>
+<div class="chat" id="ch"></div><div class="row"><input id="q" style="flex:1;min-width:200px" placeholder="Who should I contact first and why?"><button id="sd">Send</button></div>
+<div class="row" style="margin-top:8px"><button class="ghost sm s">Who should I contact first?</button><button class="ghost sm s">What drives purchases?</button><button class="ghost sm s">Suggest a campaign for medium leads</button></div></div>
+<script>
+const ch=document.getElementById('ch'),q=document.getElementById('q'),hist=[];
+function add(c,t){const d=document.createElement('div');d.className='m '+c;d.textContent=t;ch.appendChild(d);ch.scrollTop=ch.scrollHeight;return d}
+async function ask(t){t=t.trim();if(!t)return;q.value='';add('u',t);const w=add('a','Thinking…');
+ try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF':'{{ csrf() }}'},body:JSON.stringify({message:t,history:hist})});
+  const j=await r.json();w.textContent=j.reply||j.error||'Error';hist.push({role:'user',content:t},{role:'assistant',content:w.textContent})}catch(e){w.textContent='Network error.'}}
+document.getElementById('sd').onclick=()=>ask(q.value);q.onkeydown=e=>e.key==='Enter'&&ask(q.value);
+document.querySelectorAll('.s').forEach(b=>b.onclick=()=>ask(b.textContent));
+</script>{% endblock %}

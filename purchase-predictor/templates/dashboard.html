@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid">
+<div class="card stat"><b>{{ total }}</b><span>Customers</span></div>
+<div class="card stat"><b>{{ conv ~ '%' if conv is not none else '-' }}</b><span>Historical conversion</span></div>
+<div class="card stat"><b>{{ '%d%%' % (model.acc*100) if model else '-' }}</b><span>Model accuracy (holdout)</span></div>
+<div class="card stat"><b>{{ hot }}</b><span>Hot leads (&ge;70%)</span></div></div>
+{% if not model %}<div class="card"><b>No model yet.</b> <span class="mut">Add {{ need }}+ customers with known outcomes, or load demo data on the Customers page.</span></div>{% endif %}
+<div class="card"><h2>Top prospects (not yet purchased)</h2><div class="ov"><table><tr><th>Name</th><th>Probability</th><th></th></tr>
+{% for r,p in prospects %}<tr><td>{{ r.name }}</td><td><div class="bar"><i style="width:{{ p*100 }}%"></i></div></td><td>{{ '%d%%' % (p*100) }} <span class="tag {{ segment(p)[1] }}">{{ segment(p)[0] }}</span></td></tr>
+{% else %}<tr><td colspan="3" class="mut">Nothing to score yet.</td></tr>{% endfor %}</table></div></div>
+{% if model %}<div class="card"><h2>What drives purchases</h2>{% set mx = model.weights[0][1]|abs or 1 %}
+{% for l,w in model.weights %}<div class="row"><span style="width:160px">{{ l }}</span><div class="bar"><i style="width:{{ (w|abs)/mx*100 }}%;background:var(--{{ 'ok' if w>=0 else 'bad' }})"></i></div><span class="mut" style="width:55px">{{ '%+.2f' % w }}</span></div>{% endfor %}</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Add customer</h2><form method="post"><input type="hidden" name="csrf" value="{{ csrf() }}"><div class="grid">
+<div><label>Name</label><input name="name" required></div>
+{% for k,l in features %}<div><label>{{ l }}</label><input name="{{ k }}" type="number" step="any"></div>{% endfor %}
+<div><label>Purchased?</label><select name="purchased"><option value="">Unknown</option><option value="1">Yes</option><option value="0">No</option></select></div></div><br><button>Add</button></form>
+<hr style="border:0;border-top:1px solid var(--bd);margin:14px 0"><div class="row">
+<form method="post" action="{{ url_for('demo') }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="ghost">Load 80 demo customers</button></form>
+<form method="post" action="{{ url_for('import_csv') }}" enctype="multipart/form-data" class="row"><input type="hidden" name="csrf" value="{{ csrf() }}"><input type="file" name="file" accept=".csv" style="width:auto"><button class="ghost">Import CSV</button></form>
+<form method="get" action="{{ url_for('export_csv') }}"><button class="ghost">Export CSV</button></form>
+<form method="post" action="{{ url_for('clear_customers') }}" onsubmit="return confirm('Delete all customers?')"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="ghost">Delete all</button></form></div>
+<p class="mut">CSV columns: name, {{ features|map(attribute=0)|join(', ') }}, purchased (1/0/blank)</p></div>
+<div class="card"><h2>Customers ({{ rows|length }})</h2><div class="ov"><table><tr><th>Name</th>{% for k,l in features %}<th>{{ l }}</th>{% endfor %}<th>Bought</th><th>Score</th><th></th></tr>
+{% for r in rows %}{% set p = scores.get(r.id) %}<tr><td>{{ r.name }}</td>{% for k,l in features %}<td>{{ r[k]|round(1) }}</td>{% endfor %}
+<td>{{ 'Yes' if r.purchased==1 else 'No' if r.purchased==0 else '?' }}</td><td>{{ '%d%%' % (p*100) if p is not none else '-' }}</td>
+<td><form method="post" action="{{ url_for('delete_customer', cid=r.id) }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="ghost sm">✕</button></form></td></tr>{% endfor %}</table></div></div>
+{% endblock %}
